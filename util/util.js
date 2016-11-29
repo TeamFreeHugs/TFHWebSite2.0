@@ -11,9 +11,10 @@ var minifyHTML = require('express-minify-html');
 var websocket = require('websocket');
 const WebsocketServer = websocket.server;
 
-var routes = require('./../routes/index');
+var index = require('./../routes/index');
 var users = require('./../routes/users');
 var chat = require('./../routes/chat');
+var math = require('./../routes/math');
 
 var session = require('express-session');
 var MongoStore = require('connect-mongo')(session);
@@ -88,9 +89,10 @@ function setupServer(app) {
         }));
         app.use(cookieParser());
 
-        app.use('/', routes);
+        app.use('/', index);
         app.use('/users', users);
         app.use('/chat', chat);
+	app.use('/math', math)
         app.use(function(req, res, next) {
             var err = new Error('Not Found');
             err.status = 404;
@@ -105,6 +107,7 @@ function setupWebsocket(server) {
         autoAcceptConnections: false
     });
     websocket.on('request', function(request) {
+        console.log(request);
         var cookies = request.cookies;
         var wsConnection = request.accept(request.protocol, request.origin);
         cookies.forEach(function(cookie) {

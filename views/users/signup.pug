@@ -7,9 +7,9 @@ block content
 
     div#real-signup-form-wrapper
         form(method='post', action='/users/postsignup')#form
-            input(name='username')#username
-            input(name='password' type='password')#password
-            input(name='password' type='password')#password2
+            input(name='username' title='Username')#username
+            input(name='password' type='password' title='password')#password
+            input(name='password' type='password' )#password2
             input(name='email' type='email')#email
             input(type='submit')#realsubmit
     div#fake-signup-form-wrapper

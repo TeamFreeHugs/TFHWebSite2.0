@@ -1,0 +1,35 @@
+extends ../layout
+
+block head
+    script(src='/javascript/flipper.js')
+
+block content
+    h1 Coin Flipper
+    div#flipper-data
+        label Number of flips 
+        input(type='number')#flipCount
+        br
+        label Flip set count
+        input(type='number')#flipSetCount
+        br
+        label Number of heads is 
+        select#criteriaType
+            option Equals
+            option Not Equals
+            option Larger Than
+            option Smaller Than
+            option Larger | Equals
+            option Smaller | Equals
+        input(type='number')#criteriaValue
+        br
+        input(type='submit' value='Run')#run
+    br
+    hr
+    br
+    div#flipper-output
+        label Currently doing flip #
+        input(type='number' readonly='true')#currentFlipCount  
+        label which is 
+        input(readonly='true')#flip1
+        input(readonly='true')#flip2
+        input(readonly='true')#flip3

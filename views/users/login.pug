@@ -5,13 +5,13 @@ block head
 block content
     h3#login-error(style='display:none')
 
-    div#real-signup-form-wrapper
-        form(method='post', action='/users/postlogin', autocomplete='false')#form
+    div#real-login-form-wrapper
+        form(method='post', action='/users/postlogin')#form
             input(name='username' title='Your username on TFH')#username
             input(name='password' type='password' title='Your password on TFH')#password
             input(type='submit' value='login')#loginbutton
 
-    div#fake-signup-form-wrapper
+    div#fake-login-form-wrapper
         label Username:
         input(name='username' title='Your username on TFH')#fusername
         br
