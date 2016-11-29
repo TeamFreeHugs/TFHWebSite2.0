@@ -2,17 +2,16 @@ extends ../layout
 
 block head
     script(src='/javascript/math/decimal.js')
-    script(src='/javascript/math/e.js')
+    script(src='/javascript/math/pi.js')
 
 block content
-    h1 Calculate Natural Number to 100 decimal places
+    h1 Calculate Pi to 100 decimal places
     h2 You may want to keep this tab active during calculation to speed things up.
-
     div#calc-data
         label Number of iterations 
         input(type='number')#iterationCount
         br
-        label Precision 
+        label Precision
         input(type='number')#precision
         br
         input(type='submit' value='Run')#run
@@ -25,5 +24,5 @@ block content
         label Currently doing iteration #
         input(type='number' readonly='true')#currentIterationCount
         br
-        label Therefore, e = 
-        input(readonly='true')#eOutput
+        label Therefore, pi = 
+        input(readonly='true')#piOutput

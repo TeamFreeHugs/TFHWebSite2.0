@@ -3,7 +3,7 @@ var router = express.Router();
 
 router.get('/', function(req, res) {
     res.render('index', {
-        title: 'TFH Home',
+        title: 'Home',
         user: req.session.user
     });
 });

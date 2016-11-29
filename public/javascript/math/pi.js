@@ -1,32 +1,24 @@
 $(function() {
-    function fact(num) {
-        var rval=1;
-        for (var i = 2; i <= num; i++)
-            rval = rval * i;
-        return rval;
-    }
 
     function run(iterations, callback) {
 	var currentIteration = 1;
-	var currentEValue = new Decimal(0);
-	var one = new Decimal(1);
+	var piValue = new Decimal(0);
         Decimal.set({precision: parseInt($('#precision').val())});
 
         function oneRun() {
             if (currentIteration > iterations) {callback();return;}
-
-	    var base = currentIteration - 1;
-	    var number = one.div(fact(base));
-	    currentEValue = currentEValue.plus(number);
+	    piValue = piValue.add(new Decimal(Math.pow(-1, currentIteration + 1)).div(2 * currentIteration - 1));
 
 	    $('#currentIterationCount').val(currentIteration);
-	    $('#eOutput').val(currentEValue);
+	    $('#piOutput').val(piValue.times(4));
 
             currentIteration++;
             currentID = setTimeout(oneRun, 0);
         };
         oneRun();
     }
+
+
     var currentID = 0;
     var isRunning = false;
     $('#run').click(function() {

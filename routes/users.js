@@ -8,7 +8,7 @@ router.get('/signup', function(req, res) {
         return;
     }
     res.render('users/signup', {
-        title: 'TFH Signup'
+        title: 'Signup'
     });
 });
 
@@ -42,7 +42,7 @@ router.get('/login', function(req, res) {
         return;
     }
     res.render('users/login', {
-        title: 'TFH Login'
+        title: 'Login'
     });
 });
 

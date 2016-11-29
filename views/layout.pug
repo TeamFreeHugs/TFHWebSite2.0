@@ -23,5 +23,7 @@ html
                     a(href="/") Home
                 li
                     a(href="/chat") Chat
-        h1 TFH #{customTitle == null ? "Stuff" : customTitle}
+                li
+                    a(href="/math") Math
+        h1 TFH #{title ? title : "Stuff"}
         block content
