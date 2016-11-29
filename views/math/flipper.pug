@@ -30,6 +30,12 @@ block content
         label Currently doing flip #
         input(type='number' readonly='true')#currentFlipCount  
         label which is 
-        input(readonly='true')#flip1
-        input(readonly='true')#flip2
-        input(readonly='true')#flip3
+        div#flipperOutContainer
+            input(readonly='true')#flip1
+            input(readonly='true')#flip2
+            input(readonly='true')#flip3
+        br
+        br
+        label Therefore, 
+        input(readonly='true')#flipPercentage
+        label  of the flips meet the criteria

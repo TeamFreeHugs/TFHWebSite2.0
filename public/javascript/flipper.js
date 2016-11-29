@@ -24,27 +24,34 @@ $(function() {
 	    this.getCoins = () => coins;
 	}
     };
+    function run(flipCount, flipSetCount, criteriaFunction, callback) {
+        var numberOfFlipsPassed = 0;
+        var currentFlip = 1;
+	
+	$('#flipperOutContainer').children().remove();
+	for (var x = 0; x < flipSetCount; x++) $('#flipperOutContainer').append($(`<input readonly=true id="flip${x}">`));
 
-    function run(flipCount, flipSetCount, criteriaFunction) {
- 	return function() {
-	    var numberOfFlipsPassed = 0;
-	    for (var currentFlip = 1; currentFlip <= flipCount; currentFlip++) {
-		var toss = new flipTypes.TossSet(flipSetCount);
-		var type = toss.getCoins().join(', ');
-		$('#currentFlipCount').val(currentFlip);
-		$('#flip1').val(toss.getCoins()[0]);
-		$('#flip2').val(toss.getCoins()[1]);
-		$('#flip3').val(toss.getCoins()[2]);
-		var numberOfHeads = toss.getCoins().filter(coin => coin.isHead());
-	    }
-	};
+        function oneFlip() {
+            if ((currentFlip) > flipCount) {callback(numberOfFlipsPassed); return;}
+            var toss = new flipTypes.TossSet(flipSetCount);
+            var type = toss.getCoins().join(', ');
+            $('#currentFlipCount').val(currentFlip);
+	    for (var x = 0; x < flipSetCount; x++) $(`#flip${x}`).val(toss.getCoins()[x]);
+            if (criteriaFunction(toss.getCoins())) numberOfFlipsPassed++;
+            setTimeout(oneFlip, 0);
+            currentFlip++;
+        };
+        oneFlip();
     }
 
     $('#run').click(function() {
-	var flipCount = parseInt($('#flipCount').val());
-	var flipSetCount = parseInt($('#flipSetCount').val());
-	var criteriaValue = parseInt($('#criteriaValue').val());
-	var criteriaFunction = getOperator($('#criteriaType').val(), flipSetCount, criteriaValue);
-	setTimeout(run(flipCount, flipSetCount, criteriaFunction), 1000);
+        var flipCount = parseInt($('#flipCount').val());
+        var flipSetCount = parseInt($('#flipSetCount').val());
+        var criteriaValue = parseInt($('#criteriaValue').val());
+        var criteriaFunction = getOperator($('#criteriaType').val(), flipSetCount, criteriaValue);
+	$('#flipPercentage').val('---%');
+        run(flipCount, flipSetCount, criteriaFunction, function(passed) {
+	    $('#flipPercentage').val((passed / flipCount) + "%");
+        });
     });
 });
