@@ -1,0 +1,27 @@
+doctype html
+html
+    head
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        script(src='/javascript/jquery-3.1.0.min.js')
+        if typeof user !== 'undefined'
+            script var loginData = {name: "#{user.name}"}
+            script(src='/javascript/loggedin.js')
+        block head
+    body
+        if typeof user !== 'undefined' && user !== null
+            h3="Welcome, " + user.name
+            a(href="#")#logout Logout
+        else
+            h3 Welcome,&nbsp;
+                a(href="/users/signup") Sign up
+                |  or&nbsp;
+                a(href="/users/login") Login
+        nav#nav
+            ul
+                li
+                    a(href="/") Home
+                li
+                    a(href="/chat") Chat
+        h1 TFH #{customTitle == null ? title.substring("TFH ".length) : customTitle}
+        block content

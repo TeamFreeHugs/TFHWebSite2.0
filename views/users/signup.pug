@@ -1,0 +1,28 @@
+extends ../layout
+block head
+    script(src='/javascript/signup.js')
+    link(rel='stylesheet', href='/stylesheets/signup.css')
+block content
+    h3#signup-error(style='display:none')
+
+    div#real-signup-form-wrapper
+        form(method='post', action='/users/postsignup')#form
+            input(name='username')#username
+            input(name='password' type='password')#password
+            input(name='password' type='password')#password2
+            input(name='email' type='email')#email
+            input(type='submit')#realsubmit
+    div#fake-signup-form-wrapper
+        label Username:
+        input(name='username' title='Your username you want to use on TFH')#fusername
+        br
+        label Password:
+        input(name='password' type='password' title='Your password you want to use on TFH')#fpassword
+        br
+        label Confirm Password:
+        input(type='password' title='Retype your password')#fpassword2
+        br
+        label Email:
+        input(name='email' type='email' title="Your email for TFH. We won't spam you!")#femail
+        br
+        input(type='submit' value='Signup')#submit

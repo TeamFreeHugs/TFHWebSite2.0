@@ -1,0 +1,11 @@
+body {
+  padding: 0;
+  margin: 0;
+}
+#nav > ul > * {
+  display: inline-block;
+  margin-right: 5px;
+}
+#nav > ul {
+  padding-left: 12px;
+}

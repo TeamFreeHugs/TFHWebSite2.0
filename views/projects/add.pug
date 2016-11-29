@@ -1,0 +1,21 @@
+extends ../layout
+
+block head
+    script(src='/javascript/projects-add.js')
+
+block content
+    h2 Add a project
+    h3#add-error(style='display:none')
+
+    div#add-form-wrapper
+        form#add-form
+            label Name:
+            input(title='The project name')#name
+            br
+            label Is private
+            input(title='Should this project be hidden?' type='checkbox')#private
+            br
+            input(title='The .blend to use' type='file' accept='.blend')#file
+            br
+            br
+            input(type='submit' value='Add Project')#submit

@@ -1,0 +1,98 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var app = require('../app');
+var debug = require('debug')('TFH');
+var http = require('http');
+var https = require('https');
+var util = require('../util/util');
+var fs = require('fs');
+
+var port = normalizePort(process.env.PORT || '80');
+app.set('port', port);
+
+function redirect(req, res) {
+    res.writeHead(301, {
+        Location: 'https://' + req.headers['host'] + req.url
+    });
+    res.end();
+    console.log('Redirected http to https');
+}
+
+var redirectServer = http.createServer(redirect);
+
+var server = https.createServer({
+    key: fs.readFileSync(__dirname + '/../https/privkey.pem'),
+    cert: fs.readFileSync(__dirname + '/../https/cert.pem'),
+    ca: fs.readFileSync(__dirname + '/../https/chain.pem')
+}, app);
+
+server.on('listening', onListening);
+redirectServer.on('listening', onListening);
+server.on('error', onError);
+redirectServer.on('error', onError);
+
+function listen(port) {
+    redirectServer.listen(port);
+    server.listen(443);
+}
+
+listen(port);
+var websocket = util.setupWebsocket(server);
+console.log(util.websocketCache);
+
+function normalizePort(val) {
+    var port = parseInt(val, 10);
+
+    if (isNaN(port)) {
+        return val;
+    }
+
+    if (port >= 0) {
+        return port;
+    }
+
+    return false;
+}
+
+var hasAlreadyTriedToRebind = false;
+var finalPort = port;
+
+function onError(error) {
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+
+    var bind = typeof port === 'string' ?
+        'Pipe ' + port :
+        'Port ' + port;
+
+    switch (error.code) {
+        case 'EACCES':
+            if (hasAlreadyTriedToRebind) {
+                console.error(bind + ' requires elevated privileges');
+                process.exit(1);
+            }
+            listen(3000);
+            console.warn("Could not bind to port " + port + ", binding to 3000");
+            hasAlreadyTriedToRebind = true;
+            finalPort = 3000;
+            break;
+        case 'EADDRINUSE':
+            console.error(finalPort + ' is already in use');
+            process.exit(1);
+            break;
+        default:
+            throw error;
+    }
+}
+
+
+function onListening() {
+    var addr = server.address();
+    var bind = typeof addr === 'string' ?
+        'pipe ' + addr :
+        'port ' + addr.port;
+    debug('Listening on ' + bind);
+}

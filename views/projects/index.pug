@@ -1,0 +1,11 @@
+extends ../layout
+
+block head
+    script(src='/javascript/projects.js')
+
+block content
+    if user !== undefined
+        button#add-project Add a project
+        br
+    div#projects-list
+        br
