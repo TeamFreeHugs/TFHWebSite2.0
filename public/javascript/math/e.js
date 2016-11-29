@@ -16,7 +16,7 @@ $(function() {
             if (currentIteration > iterations) {callback();return;}
 
 	    var base = currentIteration - 1;
-	    var number = one.div(fact(base));
+	    var number = new Decimal(base * 2 + 2).div(fact(base * 2 + 1));
 	    currentEValue = currentEValue.plus(number);
 
 	    $('#currentIterationCount').val(currentIteration);

@@ -38,6 +38,7 @@ $(function() {
             $('#currentFlipCount').val(currentFlip);
 	    for (var x = 0; x < flipSetCount; x++) $(`#flip${x}`).val(toss.getCoins()[x]);
             if (criteriaFunction(toss.getCoins())) numberOfFlipsPassed++;
+	    $('#flipPercentage').val((numberOfFlipsPassed / flipCount) * 100 + "%");
             currentID = setTimeout(oneFlip, 0);
             currentFlip++;
         };

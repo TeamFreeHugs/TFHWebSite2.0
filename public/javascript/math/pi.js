@@ -2,15 +2,16 @@ $(function() {
 
     function run(iterations, callback) {
 	var currentIteration = 1;
-	var piValue = new Decimal(0);
+	var piValue = new Decimal(3);
+	var bottom = 2;
         Decimal.set({precision: parseInt($('#precision').val())});
 
         function oneRun() {
             if (currentIteration > iterations) {callback();return;}
-	    piValue = piValue.add(new Decimal(Math.pow(-1, currentIteration + 1)).div(2 * currentIteration - 1));
+	    piValue = piValue.add(new Decimal(4).div(bottom++ * bottom++ * bottom).times(Math.pow(-1, currentIteration + 1)));
 
 	    $('#currentIterationCount').val(currentIteration);
-	    $('#piOutput').val(piValue.times(4));
+	    $('#piOutput').val(piValue);
 
             currentIteration++;
             currentID = setTimeout(oneRun, 0);
