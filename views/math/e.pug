@@ -1,0 +1,23 @@
+extends ../layout
+
+block head
+    script(src='/javascript/math/e.js')
+
+block content
+    h1 Calculate Natural Number
+    div#calc-data
+        label Number of iterations 
+        input(type='number')#iterationCount
+        br
+        input(type='submit' value='Run')#run
+        br
+        input(type='submit' value='Stop')#stop
+    br
+    hr
+    br
+    div#flipper-output
+        label Currently doing iteration #
+        input(type='number' readonly='true')#currentIterationCount
+        br
+        label Therefore, e = 
+        input(readonly='true')#eOutput

@@ -1,7 +1,7 @@
 extends ../layout
 
 block head
-    script(src='/javascript/flipper.js')
+    script(src='/javascript/math/flipper.js')
 
 block content
     h1 Coin Flipper
@@ -23,6 +23,8 @@ block content
         input(type='number')#criteriaValue
         br
         input(type='submit' value='Run')#run
+        br
+        input(type='submit' value='Stop')#stop
     br
     hr
     br

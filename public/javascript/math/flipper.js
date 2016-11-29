@@ -38,20 +38,28 @@ $(function() {
             $('#currentFlipCount').val(currentFlip);
 	    for (var x = 0; x < flipSetCount; x++) $(`#flip${x}`).val(toss.getCoins()[x]);
             if (criteriaFunction(toss.getCoins())) numberOfFlipsPassed++;
-            setTimeout(oneFlip, 0);
+            currentID = setTimeout(oneFlip, 0);
             currentFlip++;
         };
         oneFlip();
     }
-
+    var currentID = 0;
+    var isRunning = false
     $('#run').click(function() {
+	if (isRunning) return;
+	isRunning = true;
         var flipCount = parseInt($('#flipCount').val());
         var flipSetCount = parseInt($('#flipSetCount').val());
         var criteriaValue = parseInt($('#criteriaValue').val());
         var criteriaFunction = getOperator($('#criteriaType').val(), flipSetCount, criteriaValue);
 	$('#flipPercentage').val('---%');
         run(flipCount, flipSetCount, criteriaFunction, function(passed) {
-	    $('#flipPercentage').val((passed / flipCount) + "%");
+	    $('#flipPercentage').val((passed / flipCount) * 100 + "%");
+	    isRunning = false;
         });
+    });
+    $('#stop').click(function() {
+	clearTimeout(currentID);
+	isRunning = false;
     });
 });
