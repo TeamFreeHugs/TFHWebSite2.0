@@ -14,7 +14,7 @@ app.set('port', port);
 
 function redirect(req, res) {
     res.writeHead(301, {
-        Location: 'https://' + req.headers['host'] + req.url
+        Location: 'https://minecraft.yeung.online' + req.url
     });
     res.end();
     console.log('Redirected http to https');

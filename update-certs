@@ -1,0 +1,1 @@
+/home/ec2-user/TFHWebSite2.0/certbot-auto.sh renew --force-renew >> /home/ec2-user/TFHWebSite2.0/logs/cert-updating.log
