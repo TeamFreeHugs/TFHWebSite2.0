@@ -27,7 +27,6 @@ router.get(/^\/.+\/?$/, function(req, res) {
     var projectName = req.url.match(/^\/(.+)\/?$/)[1];
     fs.stat(path.join(__dirname, '../views/math/' + projectName + '.pug'), function(err, stat) {
 	if (err) {next(); return};
-	console.log(projectName);
 	res.render('math/'+ projectName, {
 	    title: 'Math: ' + projectName,
 	    user: req.session.user

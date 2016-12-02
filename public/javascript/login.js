@@ -12,6 +12,7 @@ $(function() {
                 data: {
                     username: username,
                     password: password,
+                    csrf: $('#csrf').val()
                 }
             }).done(function() {
                 $('#username').val(username);

@@ -12,6 +12,7 @@ block content
             input(type='submit' value='login')#loginbutton
 
     div#fake-login-form-wrapper
+        input(type='hidden' name='_csrf' value=csrf)#csrf
         label Username:
         input(name='username' title='Your username on TFH')#fusername
         br

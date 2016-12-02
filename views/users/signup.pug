@@ -13,6 +13,7 @@ block content
             input(name='email' type='email')#email
             input(type='submit')#realsubmit
     div#fake-signup-form-wrapper
+        input(type='hidden' name='_csrf' value=csrf)#csrf
         label Username:
         input(name='username' title='Your username you want to use on TFH')#fusername
         br

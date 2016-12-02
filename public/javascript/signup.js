@@ -17,7 +17,8 @@ $(function() {
                 data: {
                     username: username,
                     password: password,
-                    email: email
+                    email: email,
+                    csrf: $('#csrf').val()
                 }
             }).done(function() {
                 $('#username').val(username);

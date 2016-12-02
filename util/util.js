@@ -1,4 +1,5 @@
 var express = require('express');
+var helmet = require('helmet');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -7,6 +8,8 @@ var bodyParser = require('body-parser');
 var mongo = require('mongodb');
 var minify = require('express-minify');
 var minifyHTML = require('express-minify-html');
+var url = require('url');
+var csrf = require('csurf');
 
 var websocket = require('websocket');
 const WebsocketServer = websocket.server;
@@ -39,12 +42,23 @@ try {
 
 const COOKIE_NAME = 'sessionID';
 
+function enableRateLimiting(app) {
+    app.enable('trust proxy');
+}
+
+function ensureReferrer(req, res, next) {
+    (!req.headers['host'] || req.headers['host'] !== 'minecraft.yeung.online') || (!!req.headers['referer'] && url.parse(req.headers['referer']).host !== 'minecraft.yeung.online') ? res.end('Could not serve content, please access from main site minecraft.yeung.online') : next();
+}
+
 function setupServer(app) {
+    app.use(ensureReferrer);
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'pug');
-    app.disable('x-powered-by');
-  //  app.use(minify());
-  //  app.use(minifyHTML());
+    app.use(helmet());
+
+    enableRateLimiting(app);
+    app.use(minify());
+    app.use(minifyHTML());
     app.use(require('stylus').middleware(path.join(__dirname, '../public')));
     app.use(express.static(path.join(__dirname, '../public')));
     app.use(compression({
@@ -76,7 +90,8 @@ function setupServer(app) {
             store: sessionStorage,
             resave: true,
             saveUninitialized: true,
-            name: COOKIE_NAME
+            name: COOKIE_NAME,
+            httpOnly: true
         }));
         after();
     });
@@ -88,14 +103,15 @@ function setupServer(app) {
             extended: false
         }));
         app.use(cookieParser());
-
         app.use('/', index);
         app.use('/users', users);
         app.use('/chat', chat);
 	app.use('/math', math)
-        app.use(function(req, res, next) {
-            var err = new Error('Not Found');
-            err.status = 404;
+        app.use(function(err, req, res, next) {
+            if (!err) {
+                var err = new Error('Not Found');
+                err.status = 404;
+            }
             handleError(err, req, res);
         });
     }
@@ -142,7 +158,8 @@ function setupMongo(cb) {
 }
 
 function handleError(err, req, res) {
-    res.status(err.status || 500);
+    err.status = err.status || 500
+    res.status(err.status);
     var errShortCode = err.status.toString().substring(0, 1) + '00';
     res.render('errors/error' + errShortCode, {
         title: 'TFH ',
