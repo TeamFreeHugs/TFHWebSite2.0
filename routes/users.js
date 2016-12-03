@@ -3,6 +3,12 @@ var accounts = require('./accounts');
 var router = express.Router();
 var RateLimit = require('express-rate-limit');
 var csrf = require('csurf');
+var url = require('url');
+var querystring = require('querystring');
+var request = require('request');
+var fs = require('fs');
+
+var githubData = JSON.parse(fs.readFileSync('./github-data.json'));
 
 csrfInst = csrf({
     cookie: true,
@@ -36,7 +42,8 @@ router.get('/signup', csrfInst, function(req, res) {
     res.locals.csrfToken = token;
     res.render('users/signup', {
         title: 'Signup',
-        csrf: token
+        csrf: token,
+        clientID: githubData.clientID
     });
 });
 
@@ -73,7 +80,8 @@ router.get('/login', csrfInst, function(req, res) {
     res.cookie("XSRF-TOKEN",req.csrfToken());
     res.render('users/login', {
         title: 'Login',
-        csrf: token
+        csrf: token,
+        clientID: githubData.clientID
     });
 });
 
@@ -126,5 +134,56 @@ router.post('/logout', function(req, res) {
         })
     }
 });
+
+router.get('/github-login', function(req, res) {
+    var query = url.parse(req.url).query;
+    var code = querystring.parse(query).code;
+    if (!code) {
+        res.status(400);
+        res.header('Content-Type', 'text/plain');
+        res.end('No code!');
+    }
+    request.post({
+        url: 'https://github.com/login/oauth/access_token',
+        form: {
+            client_id: githubData.clientID,
+            client_secret: githubData.clientSecret,
+            code: code
+        }
+    }, function(err, resp, body) {
+        var accessToken = querystring.parse(body).access_token;
+        request({
+            url: 'https://api.github.com/user?access_token=' + accessToken,
+            headers: {
+                'User-Agent': 'TFHWebsiteSignup'
+            }
+        }, function(err, resp, body) {
+            var userData = JSON.parse(body);
+            console.log(userData);
+            mongo.users.findOne({$or: [{name: {$regex: new RegExp(userData.login, 'i')}}, {email: userData.email}]}, function(err, user) {
+                if (user == null) { //New User
+                    mongo.users.insertOne({
+                        name: userData.login,
+                        searchName: util.clearChars(userData.login),
+                        email: userData.email,
+                        github: userData.name
+                    }, function(err) {
+                        req.session.user = user;
+                        res.redirect('/');
+                    });
+                } else {
+                    var newUser = user;
+                    newUser.github = userData.name
+                    mongo.users.findOneAndUpdate(user, newUser, function(err) {
+                        req.session.user = user;
+                        res.redirect('/');
+                    });
+                }
+            });
+        });
+    });
+});
+
+
 
 module.exports = router;

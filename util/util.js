@@ -47,7 +47,7 @@ function enableRateLimiting(app) {
 }
 
 function ensureReferrer(req, res, next) {
-    (!req.headers['host'] || req.headers['host'] !== 'minecraft.yeung.online') || (!!req.headers['referer'] && url.parse(req.headers['referer']).host !== 'minecraft.yeung.online') ? res.end('Could not serve content, please access from main site minecraft.yeung.online') : next();
+    (!req.headers['host'] || req.headers['host'] !== 'minecraft.yeung.online') ? res.end('Could not serve content, please access from main site minecraft.yeung.online') : next();
 }
 
 function setupServer(app) {

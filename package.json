@@ -23,6 +23,7 @@
     "mongodb": "^2.1.18",
     "morgan": "~1.6.1",
     "pug": "latest",
+    "request": "^2.79.0",
     "serve-favicon": "~2.3.0",
     "stylus": "latest",
     "websocket": "latest"

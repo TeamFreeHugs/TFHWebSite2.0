@@ -3,7 +3,7 @@ var crypto = require('crypto'),
 util = require('../util/util');
 
 function getSalt() {
-    return crypto.randomBytes(8192).toString('hex');
+    return crypto.randomBytes(32).toString('hex');
 }
 
 function saltHash(salt, password, cb) {
@@ -64,6 +64,10 @@ function login(details, cb) {
     }, function(err, user) {
         if (user == null) {
             cb(1, 'User Not Found');
+            return;
+        }
+        if (!user.password && !!user.github) {
+            cb(1, 'Please login using github instead.');
             return;
         }
         var salt = user.salt;
