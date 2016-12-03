@@ -9,6 +9,7 @@ var request = require('request');
 var fs = require('fs');
 
 var githubData = JSON.parse(fs.readFileSync('./github-data.json'));
+var googleData = JSON.parse(fs.readFileSync('./google-data.json'));
 
 csrfInst = csrf({
     cookie: true,
@@ -43,7 +44,8 @@ router.get('/signup', csrfInst, function(req, res) {
     res.render('users/signup', {
         title: 'Signup',
         csrf: token,
-        clientID: githubData.clientID
+        githubClientID: githubData.clientID,
+        googleClientID: googleData.clientID
     });
 });
 
@@ -81,7 +83,8 @@ router.get('/login', csrfInst, function(req, res) {
     res.render('users/login', {
         title: 'Login',
         csrf: token,
-        clientID: githubData.clientID
+        githubClientID: githubData.clientID,
+        googleClientID: googleData.clientID
     });
 });
 
@@ -159,8 +162,8 @@ router.get('/github-login', function(req, res) {
             }
         }, function(err, resp, body) {
             var userData = JSON.parse(body);
-            console.log(userData);
-            mongo.users.findOne({$or: [{name: {$regex: new RegExp(userData.login, 'i')}}, {email: userData.email}]}, function(err, user) {
+            var userQuery = {$or: [{name: {$regex: new RegExp(userData.login, 'i')}}, {email: userData.email}]};
+            mongo.users.findOne(userQuery, function(err, user) {
                 if (user == null) { //New User
                     mongo.users.insertOne({
                         name: userData.login,
@@ -172,9 +175,7 @@ router.get('/github-login', function(req, res) {
                         res.redirect('/');
                     });
                 } else {
-                    var newUser = user;
-                    newUser.github = userData.name
-                    mongo.users.findOneAndUpdate(user, newUser, function(err) {
+                    mongo.users.findOneAndUpdate(userQuery, {$set: {github: userData.name}}, function(err) {
                         req.session.user = user;
                         res.redirect('/');
                     });
@@ -184,6 +185,50 @@ router.get('/github-login', function(req, res) {
     });
 });
 
-
+router.get('/google-login', function(req, res) {
+    var referer = req.headers.referer;
+    var query = url.parse(req.url).query;
+    var code = querystring.parse(query).code;
+    if (!code) {
+        res.status(400);
+        res.header('Content-Type', 'text/plain');
+        res.end('No code!');
+    }
+    request.post({
+        url: 'https://www.googleapis.com/oauth2/v4/token',
+        form: {
+            code: code,
+            client_id: googleData.clientID,
+            client_secret: googleData.clientSecret,
+            redirect_uri: 'https://minecraft.yeung.online/users/google-login/',
+            grant_type: 'authorization_code'
+        }
+    }, function(err, resp, body) {
+        var data = JSON.parse(body);
+        var accessToken = data.access_token;
+        request('https://www.googleapis.com/plus/v1/people/me/openIdConnect?access_token=' + accessToken, function(err, resp, body) {
+            var userData = JSON.parse(body);
+            var userQuery = {$or: [{name: {$regex: new RegExp(userData.name, 'i')}}, {email: userData.email}]};
+            mongo.users.findOne(userQuery, function(err, user) {
+                if (user == null) {
+                    mongo.users.insertOne({
+                        name: userData.name,
+                        searchName: util.clearChars(userData.login),
+                        email: userData.email,
+                        google: userData.name
+                    }, function(err) {
+                        req.session.user = user;
+                        res.redirect('/');
+                    });
+                } else {
+                    mongo.users.findOneAndUpdate(userQuery, {$set: {google: userData.name}}, function(err) {
+                        req.session.user = user;
+                        res.redirect('/');
+                    });
+                }
+            });
+        });
+    });
+});
 
 module.exports = router;

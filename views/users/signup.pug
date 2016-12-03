@@ -28,4 +28,6 @@ block content
         br
         input(type='submit' value='Signup')#submit
     div#suggestions
-            a(href='https://github.com/login/oauth/authorize?client_id=' + clientID + '&redirect_uri=https://minecraft.yeung.online/users/github-login/&scope=user') Login using GitHub
+        a(href='https://github.com/login/oauth/authorize?client_id=' + githubClientID + '&redirect_uri=https://minecraft.yeung.online/users/github-login/&scope=user') Login using GitHub
+        br
+        a(href='https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=' + googleClientID + '&redirect_uri=https://minecraft.yeung.online/users/google-login/&scope=profile email') Login using Google
