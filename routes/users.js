@@ -173,7 +173,7 @@ router.get('/github-login', function(req, res) {
         res.status(400);
         res.header('Content-Type', 'text/plain');
         res.end('No code!');
-		return;
+	return;
     }
     request.post({
         url: 'https://github.com/login/oauth/access_token',
@@ -230,7 +230,7 @@ router.get('/google-login', function(req, res) {
         res.status(400);
         res.header('Content-Type', 'text/plain');
         res.end('No code!');
-		return;
+	return;
     }
     request.post({
         url: 'https://www.googleapis.com/oauth2/v4/token',
