@@ -63,11 +63,9 @@ function setupServer(app) {
     app.use(express.static(path.join(__dirname, '../public')));
     app.use(compression({
         filter: function(req, res) {
-            if (req.headers['x-no-compression']) {
-                return false
-            }
-            return compression.filter(req, res)
-        }
+            return !req.headers['x-no-compression']
+        },
+        threshold: 1
     }));
     var info = global.mongo.db.collection('info');
     info.findOne({
