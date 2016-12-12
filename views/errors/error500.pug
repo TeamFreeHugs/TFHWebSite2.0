@@ -1,6 +1,7 @@
 extends ../layout
 
 block content
-    h1='Error ' + error.status + ' ' + error.message
+    h1='Error ' + error.status + ':  ' + error.message
     if error.status === 500
-        h2='ISE'
+        h2 Internal Server Error!
+        h3 Something went wrong...

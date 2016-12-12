@@ -75,13 +75,12 @@ function setupServer(app) {
         if (!!secret) {
             sessionSecret = secret.secret;
         } else {
-            sessionSecret = require('crypto').randomBytes(Math.pow(2, 16)).toString();
+            sessionSecret = require('crypto').randomBytes(32).toString();
             info.insert({
                 type: 'sessionSecret',
                 secret: sessionSecret
             });
         }
-
 
         app.use(session({
             secret: sessionSecret,
@@ -104,14 +103,14 @@ function setupServer(app) {
         app.use('/', index);
         app.use('/users', users);
         app.use('/chat', chat);
-	app.use('/math', math)
-        app.use(function(err, req, res, next) {
-            if (!err) {
-                var err = new Error('Not Found');
-                err.status = 404;
-            }
-            handleError(err, req, res);
+	app.use('/math', math);
+        app.get('/die', (rq,rs) => {throw new TypeError('Cats')})
+        app.use(function(req, res, next) {
+            var err = new Error('Not Found');
+            err.status = 404;
+            next(err);
         });
+        app.use(handleError);
     }
 }
 
@@ -150,17 +149,19 @@ function setupMongo(cb) {
         global.mongo = {};
         global.mongo.db = db;
         global.mongo.users = db.collection('users');
-        global.mongo.projects = db.collection('projects');
+        global.mongo.pendingItems = db.collection('pendingItems');
         cb();
     });
 }
 
-function handleError(err, req, res) {
+function handleError(err, req, res, next) {
+    console.log(err);
     err.status = err.status || 500
     res.status(err.status);
     var errShortCode = err.status.toString().substring(0, 1) + '00';
+    console.log(errShortCode);
     res.render('errors/error' + errShortCode, {
-        title: 'TFH ',
+        title: '',
         message: err.message,
         error: err,
         page: require('url').parse(req.url).path,

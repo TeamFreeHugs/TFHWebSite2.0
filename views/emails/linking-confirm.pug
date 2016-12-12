@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    h1='Confirmation for linking of account ' + accountName + ' with ' + service + ' account ' + serviceUsername
+    h2='If you recently tried to login to your Team Free Hugs account ' + accountName + ' using ' + service + ', you need to confirm that you really own that account.'
+    h3 Please click the link below to confirm it
+    a(href='https://minecraft.yeung.online/users/confirm-linking/?id=' + id)='https://minecraft.yeung.online/users/confirm-linking/?id=' + id
