@@ -65,7 +65,6 @@ function setupServer(app) {
         filter: function(req, res) {
             return !req.headers['x-no-compression']
         },
-        threshold: 1
     }));
     var info = global.mongo.db.collection('info');
     info.findOne({

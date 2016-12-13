@@ -72,7 +72,7 @@ router.post('/signup', createAccountLimiter, csrfInst, function(req, res) {
 });
 
 router.post('/postsignup', function(req, res) {
-    res.redirect('/users/login');
+    res.redirect('/users/login?signup=true');
 });
 
 router.get('/login', csrfInst, function(req, res) {
@@ -249,6 +249,31 @@ router.get('/confirm-linking', function(req, res) {
             req.session.user = user;
             res.redirect('/');
             mongo.pendingItems.remove(code);
+        });
+    });
+});
+
+router.get('/linking-error', function(req, res) {
+    res.render('users/linking-error', {
+        title: 'Linking Error'
+    });
+});
+
+router.get('/signup-confirm', function(req, res) {
+    var code = querystring.parse(url.parse(req.url).query).code;
+    mongo.pendingItems.findOne({
+        code: code,
+        type: 'signup_confirm'
+    }, function(err, confirm) {
+        if (!confirm) {
+            res.status(400);
+            res.end('Invalid code!');
+            return;
+        }
+        var user = confirm.user;
+        mongo.pendingItems.remove(confirm);
+        mongo.users.findOneAndUpdate(user, {$set: {confirmed: true}}, function(err) {
+            res.redirect('/users/login');
         });
     });
 });

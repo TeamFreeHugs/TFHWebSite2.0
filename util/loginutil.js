@@ -9,6 +9,10 @@ function handleOAuthLogin(req, res, userData, service, serviceUsername) {
             req.session.user = user;
             res.redirect('/');
         } else {
+            if (!user.confirmed) {
+                res.redirect('/users/linking-error?reason=unconfirm');
+                return;
+            }
             // Linking for first time
             var pendingCode = crypto.randomBytes(32).toString('hex');
             mongo.pendingItems.insertOne({
