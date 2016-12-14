@@ -8,8 +8,9 @@ var querystring = require('querystring');
 var request = require('request');
 var fs = require('fs');
 var crypto = require('crypto');
-var OAuthServer = require('../util/oauth.js');
-var loginUtil = require('../util/loginutil.js');
+var OAuthServer = require('../util/oauth');
+var loginUtil = require('../util/loginutil');
+var handleError = require('../util/err');
 
 var githubData = JSON.parse(fs.readFileSync('./github-data.json'));
 var googleData = JSON.parse(fs.readFileSync('./google-data.json'));
@@ -58,11 +59,7 @@ router.post('/signup', createAccountLimiter, csrfInst, function(req, res) {
     }
     accounts.signup(req.body, function(state, method) {
         if (state == 1) {
-            res.status(400);
-            res.header('Content-Type', 'application/json');
-            res.send(JSON.stringify({
-                reason: "Could not sign up due to " + method + " being used."
-            }));
+            handleError(res, 'AlreadyExistsError', 'Could not sign up due to ' + method + ' being used.');
         } else {
             res.header('Content-Type', 'text/plain');
             res.status(204);
@@ -97,11 +94,7 @@ router.post('/login', loginLimiter, csrfInst, function(req, res) {
     }
     accounts.login(req.body, function(state, error, user) {
         if (state == 1) {
-            res.status(400);
-            res.header('Content-Type', 'application/json');
-            res.send(JSON.stringify({
-                reason: error
-            }));
+            handleError(res, 'InvalidAuthError', error);
         } else {
             req.session.user = user;
             res.status(204);
@@ -117,24 +110,15 @@ router.post('/postlogin', function(req, res) {
 
 router.post('/logout', function(req, res) {
     if (!req.session.user) {
-        res.status(400);
-        res.header('Content-Type', 'application/json');
-        res.send(JSON.stringify({
-            error: 'Not logged in'
-        }));
+        handleError(res, 'NotLoggedInError', 'You are not logged in.');
     } else {
         accounts.findUser(req.session.user, function(user) {
+            delete req.session.user;
             if (user !== null) {
-                delete req.session.user;
                 res.cookie('sessionID', '', { expires: new Date() });
                 res.end();
             } else {
-                res.status(400);
-                res.header('Content-Type', 'application/json');
-                res.send(JSON.stringify({
-                    error: 'No such user'
-                }));
-                res.end();
+                handleError(res, 'NoSuchUserError', 'There is no such user associated with your account.');
             }
         })
     }
@@ -228,8 +212,7 @@ router.get('/linking-complete', function(req, res) {
 router.get('/confirm-linking', function(req, res) {
     var id = querystring.parse(url.parse(req.url).query).id;
     if (!id) {
-        res.status(400);
-        res.end('Invalid linking code');
+        handleError(res, 'MissingFieldError', 'Invalid code.');
         return;
     }
     mongo.pendingItems.findOne({
@@ -237,8 +220,7 @@ router.get('/confirm-linking', function(req, res) {
         code: id
     }, function(err, code) {
         if (!code) {
-            res.status(400);
-            res.end('Invalid linking code');
+            handleError(res, 'InvalidFieldError', 'Invalid code.');
             return;
         }
         var user = code.user;
@@ -266,8 +248,7 @@ router.get('/signup-confirm', function(req, res) {
         type: 'signup_confirm'
     }, function(err, confirm) {
         if (!confirm) {
-            res.status(400);
-            res.end('Invalid code!');
+            handleError(res, 'InvalidFieldError', 'No such code!');
             return;
         }
         var user = confirm.user;

@@ -25,11 +25,11 @@ $(function() {
             }).fail(function(data) {
                 data = data.responseText;
                 data = JSON.parse(data);
-                $('#login-error').text(data.reason);
+                $('#login-error').text(data.message);
             });
         }
     });
-    $('#fake-signup-form-wrapper > input').keydown(function(event) {
+    $('#fake-login-form-wrapper > input').keydown(function(event) {
         if(event.keyCode == 13) {
             $('#submit').click();
         }

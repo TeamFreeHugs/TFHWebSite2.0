@@ -17,7 +17,6 @@ router.get('/rooms', function(req, res) {
     var next = querystring.parse(url.parse(req.url).query).next || 0;
     var pageSize = 20;
     mongo.chatRooms.find({}).skip(next * pageSize).limit(pageSize).toArray(function(err, rooms) {
-        console.log(rooms);
         res.setHeader('Content-Type', 'application/json');
         res.send(JSON.stringify(rooms));
     });

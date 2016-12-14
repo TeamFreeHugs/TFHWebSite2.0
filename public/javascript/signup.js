@@ -28,7 +28,7 @@ $(function() {
             }).fail(function(data) {
                 data = data.responseText;
                 data = JSON.parse(data);
-                $('#signup-error').text(data.reason);
+                $('#signup-error').text(data.description);
             });
         }
     });
