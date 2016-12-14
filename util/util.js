@@ -110,7 +110,7 @@ function setupServer(app) {
             err.status = 404;
             next(err);
         });
-        app.use(handleError);
+        app.use(handleRequestError);
     }
 }
 
@@ -156,7 +156,7 @@ function setupMongo(cb) {
     });
 }
 
-function handleError(err, req, res, next) {
+function handleRequestError(err, req, res, next) {
     console.log(err);
     err.status = err.status || 500
     res.status(err.status);

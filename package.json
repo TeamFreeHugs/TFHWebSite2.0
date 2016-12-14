@@ -29,5 +29,17 @@
     "serve-favicon": "~2.3.0",
     "stylus": "latest",
     "websocket": "latest"
-  }
+  },
+  "description": "The Team Free Hugs Website",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeamFreeHugs/TFHWebSite2.0.git"
+  },
+  "author": "Eyeballcode",
+  "bugs": {
+    "url": "https://github.com/TeamFreeHugs/TFHWebSite2.0/issues"
+  },
+  "homepage": "https://github.com/TeamFreeHugs/TFHWebSite2.0#readme"
 }

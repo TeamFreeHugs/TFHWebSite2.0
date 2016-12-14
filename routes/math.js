@@ -23,7 +23,7 @@ router.post('/projects', function(req, res) {
     });
 });
 
-router.get(/^\/.+\/?$/, function(req, res) {
+router.get(/^\/.+\/?$/, function(req, res, next) {
     var projectName = req.url.match(/^\/(.+)\/?$/)[1];
     fs.stat(path.join(__dirname, '../views/math/' + projectName + '.pug'), function(err, stat) {
 	if (err) {next(); return};
