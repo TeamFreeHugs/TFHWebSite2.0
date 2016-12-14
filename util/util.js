@@ -10,6 +10,7 @@ var minify = require('express-minify');
 var minifyHTML = require('express-minify-html');
 var url = require('url');
 var csrf = require('csurf');
+var handleError = require('./err');
 
 var websocket = require('websocket');
 const WebsocketServer = websocket.server;
@@ -178,12 +179,7 @@ function requestExpectFields(fields, req, res, success, fail) {
         if (typeof req.body[fieldName] === 'undefined' || req.body[fieldName].trim() === '') {
             if (fail) fail();
             else {
-                res.status(400);
-                res.header('Content-Type', 'application/json');
-                res.end(JSON.stringify({
-                    error: "IncompletePayloadError",
-                    message: "Expected field " + fieldName + " but did not get it."
-                }));
+                handleError(res, 'IncompletePayloadError', 'Expected field ' + fieldName + ' but did not get it.');
                 hasErrored = true;
             }
             return;
