@@ -63,8 +63,9 @@ function setupServer(app) {
     app.use(express.static(path.join(__dirname, '../public')));
     app.use(compression({
         filter: function(req, res) {
-            return !req.headers['x-no-compression']
-        },
+            if (req.headers['x-no-compression']) return false;
+            return req.method == 'POST';
+        }
     }));
     var info = global.mongo.db.collection('info');
     info.findOne({
@@ -103,7 +104,6 @@ function setupServer(app) {
         app.use('/users', users);
         app.use('/chat', chat);
 	app.use('/math', math);
-        app.get('/die', (rq,rs) => {throw new TypeError('Cats')})
         app.use(function(req, res, next) {
             var err = new Error('Not Found');
             err.status = 404;
@@ -149,6 +149,8 @@ function setupMongo(cb) {
         global.mongo.db = db;
         global.mongo.users = db.collection('users');
         global.mongo.pendingItems = db.collection('pendingItems');
+        global.mongo.chatRooms = db.collection('chatRooms');
+        global.mongo.chatMessages = db.collection('chatMessages');
         cb();
     });
 }
