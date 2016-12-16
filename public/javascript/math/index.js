@@ -5,7 +5,7 @@ $(function(){
     }).done(function(data) {
 	var data = JSON.parse(data);
 	data.forEach(function(project) {
-	    $('#mathProjects').append($(`<a href="https://minecraft.yeung.online/math/${project}">${project}</a>`)).append("<br />").append("<hr />");
+	    $('#mathProjects').append($(`<a href="https://minecraft.eyeball.online/math/${project}">${project}</a>`)).append("<br />").append("<hr />");
 	});
     });
 });

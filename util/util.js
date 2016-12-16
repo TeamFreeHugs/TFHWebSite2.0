@@ -48,7 +48,7 @@ function enableRateLimiting(app) {
 }
 
 function ensureReferrer(req, res, next) {
-    (!req.headers['host'] || req.headers['host'] !== 'minecraft.yeung.online') ? res.end('Could not serve content, please access from main site minecraft.yeung.online') : next();
+    (!req.headers['host'] || req.headers['host'] !== 'minecraft.eyeball.online') ? res.end('Could not serve content, please access from main site minecraft.eyeball.online') : next();
 }
 
 function setupServer(app) {
@@ -120,7 +120,6 @@ function setupWebsocket(server) {
         autoAcceptConnections: false
     });
     websocket.on('request', function(request) {
-        console.log(request);
         var cookies = request.cookies;
         var wsConnection = request.accept(request.protocol, request.origin);
         cookies.forEach(function(cookie) {
@@ -157,7 +156,6 @@ function setupMongo(cb) {
 }
 
 function handleRequestError(err, req, res, next) {
-    console.log(err);
     err.status = err.status || 500
     res.status(err.status);
     var errShortCode = err.status.toString().substring(0, 1) + '00';

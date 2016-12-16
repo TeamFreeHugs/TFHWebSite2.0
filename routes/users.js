@@ -11,6 +11,7 @@ var crypto = require('crypto');
 var OAuthServer = require('../util/oauth');
 var loginUtil = require('../util/loginutil');
 var handleError = require('../util/err');
+var util = require('../util/util');
 
 var githubData = JSON.parse(fs.readFileSync('./github-data.json'));
 var googleData = JSON.parse(fs.readFileSync('./google-data.json'));
@@ -126,21 +127,21 @@ router.post('/logout', function(req, res) {
 
 router.get('/github-login-redir', function(req, res) {
     var state = crypto.randomBytes(16).toString('hex');
-    var url = 'https://github.com/login/oauth/authorize?client_id=' + githubData.clientID + '&redirect_uri=https://minecraft.yeung.online/users/github-login/&scope=user&state=' + state;
+    var url = 'https://github.com/login/oauth/authorize?client_id=' + githubData.clientID + '&redirect_uri=https://minecraft.eyeball.online/users/github-login/&scope=user:email&state=' + state;
     OAuthServer.addState('github', state);
     res.redirect(url);
 });
 
 router.get('/google-login-redir', function(req, res) {
     var state = crypto.randomBytes(16).toString('hex');
-    var url = 'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=' + googleData.clientID + '&redirect_uri=https://minecraft.yeung.online/users/google-login/&scope=profile email openid&state=' + state;
+    var url = 'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=' + googleData.clientID + '&redirect_uri=https://minecraft.eyeball.online/users/google-login/&scope=profile email openid&state=' + state;
     OAuthServer.addState('google', state);
     res.redirect(url);
 });
 
 router.get('/github-login', function(req, res) {
     new OAuthServer(req, res, 'github',
-    'https://github.com/login/oauth/access_token', githubData.clientID, githubData.clientSecret, 'https://minecraft.yeung.online/users/github-login/', (accessToken) => {
+    'https://github.com/login/oauth/access_token', githubData.clientID, githubData.clientSecret, 'https://minecraft.eyeball.online/users/github-login/', (accessToken) => {
         request({
              url: 'https://api.github.com/user?access_token=' + accessToken,
              headers: {
@@ -172,9 +173,10 @@ router.get('/github-login', function(req, res) {
 
 router.get('/google-login', function(req, res) {
     new OAuthServer(req, res, 'google',
-    'https://www.googleapis.com/oauth2/v4/token', googleData.clientID, googleData.clientSecret, 'https://minecraft.yeung.online/users/google-login/', (accessToken) => {
+    'https://www.googleapis.com/oauth2/v4/token', googleData.clientID, googleData.clientSecret, 'https://minecraft.eyeball.online/users/google-login/', (accessToken) => {
         request('https://www.googleapis.com/plus/v1/people/me/openIdConnect?access_token=' + accessToken, function(err, resp, body) {
             var userData = JSON.parse(body);
+            console.log(userData);
             var userQuery = {$or: [{name: {$regex: new RegExp(userData.name, 'i')}}, {email: userData.email}]};
             mongo.users.findOne(userQuery, (err, user) => {
                 if (user == null) { //Signup

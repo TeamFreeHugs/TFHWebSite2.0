@@ -50,7 +50,18 @@ router.post('/add', function(req, res) {
             });
         });
     });
-    
+});
+
+router.get('/add', function(req, res) {
+    var user = req.session.user;
+    if (!user) {
+        res.redirect('/users/login');
+        return;
+    }
+    res.render('chat/add', {
+        title: 'Add Chat Room',
+        user: user
+    });
 });
 
 module.exports = router;

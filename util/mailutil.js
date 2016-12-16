@@ -11,7 +11,7 @@ var EMailer = function EMailer() {
 EMailer.prototype.send = function send(to, subject, file, variables={}, cb) {
     var html = pug.renderFile(path.join(__dirname, '..', 'views', file + '.pug'), variables);
     transport.sendMail({
-        from: '"Admin" <admin@yeung.online>',
+        from: '"Admin" <admin@eyeball.online>',
         to: to,
         subject: subject,
         html: html

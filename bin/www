@@ -9,14 +9,16 @@ var https = require('https');
 var util = require('../util/util');
 var fs = require('fs');
 
+var useHttps = false;
+
 var port = normalizePort(process.env.PORT || '80');
 app.set('port', port);
 
 function redirect(req, res) {
     res.writeHead(301, {
-        Location: 'https://minecraft.yeung.online' + req.url
+        Location: 'https://minecraft.eyeball.online' + req.url
     });
-    res.end();
+    res.end('Test');
     console.log('Redirected http to https');
 }
 
@@ -34,8 +36,13 @@ server.on('error', onError);
 redirectServer.on('error', onError);
 
 function listen(port) {
-    redirectServer.listen(port);
-    server.listen(443);
+    if (useHttps) {
+        redirectServer.listen(port);
+        server.listen(443);
+    } else {
+        console.log('No https');
+        http.createServer(app).listen(port);
+    }
 }
 
 listen(port);
