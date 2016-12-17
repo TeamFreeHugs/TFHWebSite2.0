@@ -48,14 +48,26 @@ function enableRateLimiting(app) {
 }
 
 function ensureReferrer(req, res, next) {
-    (!req.headers['host'] || req.headers['host'] !== 'minecraft.eyeball.online') ? res.end('Could not serve content, please access from main site minecraft.eyeball.online') : next();
+    (!req.headers['host'] || req.headers['host'] !== 'minecraft.eyeball.online') ? res.redirect('https://minecraft.eyeball.online' + req.url) : next();
+}
+
+function setupMiddleware(app) {
 }
 
 function setupServer(app) {
+    app.use(helmet());
+	app.use(helmet.referrerPolicy());
+	app.use(helmet.contentSecurityPolicy({
+		directives: {
+			defaultSrc: ["'self'"],
+			imgSrc: ['data:', "'self'"],
+			sandbox: ['allow-forms', 'allow-scripts'],
+			reportUri: '/csp-report'
+		}
+	}));
     app.use(ensureReferrer);
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'pug');
-    app.use(helmet());
 
     enableRateLimiting(app);
     app.use(minify());

@@ -9,9 +9,11 @@ var https = require('https');
 var util = require('../util/util');
 var fs = require('fs');
 
-var useHttps = false;
+var args = process.argv.slice(process.argv.indexOf('node') + 3);
 
-var port = normalizePort(process.env.PORT || '80');
+var useHttps = args.indexOf('--no-https') === -1;
+
+var port = normalizePort(args[args.indexOf('--port') + 1] || '80');
 app.set('port', port);
 
 function redirect(req, res) {
