@@ -51,20 +51,18 @@ function ensureReferrer(req, res, next) {
     (!req.headers['host'] || req.headers['host'] !== 'minecraft.eyeball.online') ? res.redirect('https://minecraft.eyeball.online' + req.url) : next();
 }
 
-function setupMiddleware(app) {
-}
-
-function setupServer(app) {
+function setupMiddleware(app, after) {
     app.use(helmet());
-	app.use(helmet.referrerPolicy());
-	app.use(helmet.contentSecurityPolicy({
-		directives: {
-			defaultSrc: ["'self'"],
-			imgSrc: ['data:', "'self'"],
-			sandbox: ['allow-forms', 'allow-scripts'],
-			reportUri: '/csp-report'
-		}
-	}));
+    app.use(helmet.referrerPolicy());
+    app.use(helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            imgSrc: ['data:', "'self'"],
+            sandbox: ['allow-forms', 'allow-scripts'],
+            styleSrc: ["'unsafe-inline'", "'self'"],
+            reportUri: '/csp-report'
+        }
+    }));
     app.use(ensureReferrer);
     app.set('views', path.join(__dirname, '../views'));
     app.set('view engine', 'pug');
@@ -103,16 +101,19 @@ function setupServer(app) {
             name: COOKIE_NAME,
             httpOnly: true
         }));
-        after();
-    });
-
-    function after() {
         app.use(logger('dev'));
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({
             extended: false
         }));
         app.use(cookieParser());
+        after();
+    });
+}
+
+function setupServer(app) {
+    setupMiddleware(app, after);
+    function after() {
         app.use('/', index);
         app.use('/users', users);
         app.use('/chat', chat);

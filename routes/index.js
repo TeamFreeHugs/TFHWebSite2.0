@@ -8,4 +8,9 @@ router.get('/', function(req, res) {
     });
 });
 
+router.post('/csp-report', function(req, res) {
+        console.log(req.body);
+        res.end();
+});
+
 module.exports = router;
